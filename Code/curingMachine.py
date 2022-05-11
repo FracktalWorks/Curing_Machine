@@ -1,20 +1,20 @@
 #!/usr/bin/python
 
+Development = True
 
 import curingMachineUI
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
 import time
 from collections import OrderedDict
 import logging
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)  # Use the board numbering scheme
-GPIO.setwarnings(False)  # Disable GPIO warnings H
 
-buzzer = BuzzerFeedback(12)
-acmotor = AcMotor(16)
-uvled = UvLED(26)
-acheater = AcHeater(20)
-maglock = MagLock(21)
+if not Development:
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BCM)  # Use the board numbering scheme
+    GPIO.setwarnings(False)  # Disable GPIO warnings H
+pass
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -154,6 +154,14 @@ class QToolButtonFeedback(QtWidgets.QToolButton):
 QtWidgets.QToolButton = QToolButtonFeedback
 QtWidgets.QPushButton = QPushButtonFeedback
 
+
+buzzer = BuzzerFeedback(12)
+acmotor = AcMotor(16)
+uvled = UvLed(26)
+acheater = AcHeater(20)
+maglock = MagLock(21)
+
+
 class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
     
     def setupUi(self, MainWindow):
@@ -188,6 +196,24 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
 
         # Operate Screen:
         self.playPauseButton.pressed.connect(self.startStopAction)
-        self.stopButton.pressed.connect(self.stopAction)
+        self.stopButton.pressed.connect(self.startStopAction)
         self.uvStartStopButton.pressed.connect(self.startStopAction)
         self.tempStartStopButton.pressed.connect(self.startStopAction)
+
+
+    def startStopAction(self):
+        pass
+
+
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    # Intialize the library (must be called once before other functions).
+    # Creates an object of type MainUiClass
+    MainWindow = MainUiClass()
+    MainWindow.show()
+    # MainWindow.showFullScreen()
+    # MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+    # Create NeoPixel object with appropriate configuration.
+    # charm = FlickCharm()
+    # charm.activateOn(MainWindow.FileListWidget)
+sys.exit(app.exec_())
