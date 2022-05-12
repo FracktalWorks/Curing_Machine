@@ -141,3 +141,32 @@ Replace `````/opt/splash.png````` with the path to the splash screen image as ap
 Enable the service to be run at boot by running as root:
 
 ```sudo systemctl enable splashscreen```
+
+### Touch UI
+install dependencies under ```sudo pip3```
+
+#### Configure Startx (Xwindow manager which helps to show GUI on Raspbian os lite)
+
+```sudo nano /etc/rc.local```
+Add “startx” just before exit 0
+```sudo nano /etc/X11/xinit/xinitrc```
+Here you have to add the location of touch ui where it is saved and file name
+Example 
+```
+
+#!/bin/sh
+
+# /etc/X11/xinit/xinitrc
+#
+# global xinitrc file, used by all X sessions started by xinit (startx)
+git clone https://github.com/FracktalWorks/Curing_Machine.git
+cd /home/pi/Curing_Machine/code
+sudo chmod +x curingMachine.py
+sudo python3 curingMachine.py
+# invoke global X session script
+. /etc/X11/Xsession
+
+
+```
+Now when you do startx the GUI will boot up
+
