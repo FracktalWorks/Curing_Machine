@@ -155,6 +155,10 @@ QtWidgets.QToolButton = QToolButtonFeedback
 QtWidgets.QPushButton = QPushButtonFeedback
 
 
+'''
+Declaring BCM pin
+'''
+
 buzzer = BuzzerFeedback(12)
 acmotor = AcMotor(16)
 uvled = UvLed(26)
