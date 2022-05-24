@@ -3,17 +3,20 @@
 Development = True
 
 import curingMachineUI
+from materials import materials
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import time
 from collections import OrderedDict
 import logging
 
+
+
+
 if not Development:
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BCM)  # Use the board numbering scheme
     GPIO.setwarnings(False)  # Disable GPIO warnings H
-pass
 
 
 try:
@@ -71,12 +74,6 @@ class AcMotor(object):
             GPIO.output(self.acMotorPin, GPIO.LOW)
         pass
 
-    @run_async
-    def buzz(self):
-        if not Development:
-            GPIO.output(self.acMotorPin, (GPIO.HIGH))
-        pass
-
 '''
 Definition of UV LED. 
 '''
@@ -87,12 +84,6 @@ class UvLed(object):
             self.uvLedPin = uvLedPin
             GPIO.setup(self.uvLedPin, GPIO.OUT)
             GPIO.output(self.uvLedPin, GPIO.LOW)
-        pass
-
-    @run_async
-    def buzz(self):
-        if not Development:
-            GPIO.output(self.uvLedPin, (GPIO.HIGH))
         pass
 '''
 Definition of AC Heater. 
@@ -105,13 +96,6 @@ class AcHeater(object):
             GPIO.setup(self.acHeaterPin, GPIO.OUT)
             GPIO.output(self.acHeaterPin, GPIO.LOW)
         pass
-
-    @run_async
-    def buzz(self):
-        if not Development:
-            GPIO.output(self.acHeaterPin, (GPIO.HIGH))
-        pass
-
 '''
 Definition of Magnetic Lock. 
 '''
@@ -124,11 +108,16 @@ class MagLock(object):
             GPIO.output(self.magLockPin, GPIO.LOW)
         pass
 
-    @run_async
-    def buzz(self):
-        if not Development:
-            GPIO.output(self.magLockPin, (GPIO.HIGH))
-        pass
+
+'''
+Declaring BCM pin
+'''
+
+buzzer = BuzzerFeedback(12)
+acmotor = AcMotor(16)
+uvled = UvLed(26)
+acheater = AcHeater(20)
+maglock = MagLock(21)
 
 
 
@@ -155,24 +144,10 @@ QtWidgets.QToolButton = QToolButtonFeedback
 QtWidgets.QPushButton = QPushButtonFeedback
 
 
-'''
-Declaring BCM pin
-'''
-
-buzzer = BuzzerFeedback(12)
-acmotor = AcMotor(16)
-uvled = UvLed(26)
-acheater = AcHeater(20)
-maglock = MagLock(21)
 
 
 class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
     
-    def setupUi(self, MainWindow):
-        super(MainUiClass, self).setupUi(MainWindow)
-        font = QtGui.QFont()
-        font.setFamily(_fromUtf8("Gotham"))
-        font.setPointSize(15)
 
     def __init__(self):
         '''
@@ -191,6 +166,14 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         except Exception as e:
             self._logger.error(e)
         self.setActions()
+
+    def setupUi(self, MainWindow):
+        super(MainUiClass, self).setupUi(MainWindow)
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Gotham"))
+        font.setPointSize(15)
+        self.materialComboBox.addItems(sorted(materials.keys()))
+        # print (materials.keys())
 
     def setActions(self):
 
