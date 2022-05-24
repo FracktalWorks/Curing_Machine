@@ -110,16 +110,14 @@ class MagLock(object):
 
 
 '''
-Declaring BCM pin
+Declaring Objects
 '''
 
 buzzer = BuzzerFeedback(12)
-acmotor = AcMotor(16)
-uvled = UvLed(26)
-acheater = AcHeater(20)
-maglock = MagLock(21)
-
-
+turnTable = AcMotor(16)
+uvLed = UvLed(26)
+heater = AcHeater(20)
+magLock = MagLock(21)
 
 '''
 To get the buzzer to beep on button press
@@ -182,14 +180,61 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         '''
 
         # Operate Screen:
-        self.playPauseButton.pressed.connect(self.startStopAction)
-        self.stopButton.pressed.connect(self.startStopAction)
+        self.playPauseButton.pressed.connect(self.playPauseAction)
+        self.stopButton.pressed.connect(self.stopAction)
         self.uvStartStopButton.pressed.connect(self.startStopAction)
         self.tempStartStopButton.pressed.connect(self.startStopAction)
+        self.timeSpinBox.valueChanged.connect(self.timerChangedAction)
 
+    def playPauseAction(self):
+        '''
+        get status of all the settings buttons
+        start timer thread
+        dissable settings tab
+        start progress bar as time elaplsed/time remining
 
-    def startStopAction(self):
+    or
+
+        get time remaining value
+        set it on the timer
+        set combobox to custom
+        ungreay settings
+        '''
         pass
+    def stopAction(self):
+        '''
+        ungreay settings
+        stop all working
+        clear progress bar
+        stop timer thread
+
+        '''
+        pass
+    def toggleUvLed(self):
+        '''
+        overide Material Preset combobox
+        set combobox to custom
+        retain previous state of other settings
+        toggle state of heater
+        '''
+        pass
+    def toggleHeater(self):
+        '''
+        overide Material Preset combobox
+        set combobox to custom
+        retain previous state of other settings
+        toggle state of heater
+        '''
+        pass
+    def timerChangedAction(self):
+        '''
+        overide Material Preset combobox
+        set combobox to custom
+        retain previous state of other settings
+        toggle state of heater
+        '''
+        pass
+
 
 
 if __name__ == '__main__':
