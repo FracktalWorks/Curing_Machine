@@ -12,7 +12,6 @@ import logging
 
 
 
-
 if not Development:
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BCM)  # Use the board numbering scheme
@@ -164,6 +163,11 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         except Exception as e:
             self._logger.error(e)
         self.setActions()
+        self.timeElapsed = 0
+        self.timeRemaining = 0
+        self.pauseFlag = False
+
+
 
     def setupUi(self, MainWindow):
         super(MainUiClass, self).setupUi(MainWindow)
@@ -182,9 +186,10 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         # Operate Screen:
         self.playPauseButton.pressed.connect(self.playPauseAction)
         self.stopButton.pressed.connect(self.stopAction)
-        self.uvStartStopButton.pressed.connect(self.startStopAction)
-        self.tempStartStopButton.pressed.connect(self.startStopAction)
+        self.uvStartStopButton.pressed.connect(self.toggleUvLed)
+        self.tempStartStopButton.pressed.connect(self.toggleHeater)
         self.timeSpinBox.valueChanged.connect(self.timerChangedAction)
+
 
     def playPauseAction(self):
         '''
@@ -200,7 +205,31 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         set combobox to custom
         ungreay settings
         '''
-        pass
+        if self.timeSpinBox.value() == 0:
+            QtWidgets.QMessageBox.warning(self,'Warning','Set Timer in Settings Tab First')
+        else:
+            if self.playPauseButton.isChecked() is False:
+                if self.uvStartStopButton.isChecked() :
+                    pass
+                if self.tempStartStopButton.isChecked() :
+                    pass
+                self.materialPreset.setText((self.materialComboBox.currentText()))
+                if  self.pauseFlag:
+                    self.curingTimerThreadObject = ThreadCuringTimer(self.timeRemaining)
+                    self.pauseFlag = False
+                else:
+                    self.curingTime = self.timeSpinBox.value()
+                    self.curingTimerThreadObject = ThreadCuringTimer(self.curingTime)
+
+                self.curingTimerThreadObject.curing_done_signal.connect(self.curingDoneAction)
+                self.curingTimerThreadObject.progress_bar_signal.connect(self.updateProgressBar)
+                self.curingTimerThreadObject.time_remaining_signal.connect(self.timeRemainingAction)
+                self.curingTimerThreadObject.start()
+
+            else:
+                self.curingTimerThreadObject.stop()
+                self.pauseFlag = True
+
     def stopAction(self):
         '''
         ungreay settings
@@ -209,6 +238,11 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         stop timer thread
 
         '''
+        self.curingTimerThreadObject.stop()
+        self.pauseFlag = False
+        self.playPauseButton.setChecked(False)
+        self.progressBar.setValue(0)
+        self.timeRemainingLabel.setText(str(0) + " Seconds")
         pass
     def toggleUvLed(self):
         '''
@@ -217,6 +251,8 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         retain previous state of other settings
         toggle state of heater
         '''
+        self.materialComboBox.addItem('Custom')
+        self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
         pass
     def toggleHeater(self):
         '''
@@ -225,6 +261,8 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         retain previous state of other settings
         toggle state of heater
         '''
+        self.materialComboBox.addItem('Custom')
+        self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
         pass
     def timerChangedAction(self):
         '''
@@ -233,7 +271,49 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         retain previous state of other settings
         toggle state of heater
         '''
+        self.materialComboBox.addItem('Custom')
+        self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
         pass
+
+    def curingDoneAction(self):
+        print('curing done')
+        self.progressBar.setValue(100)
+        self.pauseFlag = False
+        self.playPauseButton.setChecked(False)
+        self.timeRemainingLabel.setText(str(0) + ' Seconds')
+        pass
+
+    def updateProgressBar(self, timeRemaining):
+        self.timeRemainingLabel.setText(str(int(timeRemaining)) + ' Seconds')
+        self.progressBar.setValue((((self.curingTime - timeRemaining)/self.curingTime))*100)
+        pass
+    def timeRemainingAction(self,timeRemaining):
+        self.timeRemaining = timeRemaining
+
+class ThreadCuringTimer(QtCore.QThread):
+    curing_done_signal = QtCore.pyqtSignal()
+    progress_bar_signal = QtCore.pyqtSignal(int)
+    time_remaining_signal = QtCore.pyqtSignal(int)
+
+    def __init__(self, curingTime):
+        super(ThreadCuringTimer, self).__init__()
+        self.curingTime = curingTime
+
+    def run(self):
+        self.startTime = time.time()
+        self.timeElapsed = (time.time() - self.startTime)
+        while self.timeElapsed <= self.curingTime:
+            self.progress_bar_signal.emit(self.curingTime - self.timeElapsed)
+            time.sleep(1)
+            self.timeElapsed = (time.time() - self.startTime)
+        self.curing_done_signal.emit()
+    #
+    def stop(self):
+        if self.timeElapsed <= self.curingTime:
+            self.time_remaining_signal.emit(self.curingTime - self.timeElapsed)
+        self.terminate()
+
+
 
 
 

@@ -95,7 +95,7 @@ QTabBar:focus {
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -354,7 +354,7 @@ QProgressBar {
        <string>Time Remaining:</string>
       </property>
      </widget>
-     <widget class="QLabel" name="timeRemaining">
+     <widget class="QLabel" name="timeRemainingLabel">
       <property name="geometry">
        <rect>
         <x>230</x>
@@ -418,7 +418,7 @@ background-color: rgba(255, 255, 255, 0);</string>
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="FileNameLabel_2">
+     <widget class="QLabel" name="materialPresetLabel">
       <property name="geometry">
        <rect>
         <x>60</x>
