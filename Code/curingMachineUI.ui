@@ -831,7 +831,7 @@ QSpinBox::down-button:pressed {
        <string> min</string>
       </property>
       <property name="maximum">
-       <number>150</number>
+       <number>500</number>
       </property>
       <property name="singleStep">
        <number>1</number>

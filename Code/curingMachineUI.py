@@ -428,7 +428,7 @@ class Ui_MainWindow(object):
         self.timeSpinBox.setReadOnly(False)
         self.timeSpinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.PlusMinus)
         self.timeSpinBox.setAccelerated(True)
-        self.timeSpinBox.setMaximum(150)
+        self.timeSpinBox.setMaximum(500)
         self.timeSpinBox.setSingleStep(1)
         self.timeSpinBox.setProperty("value", 0)
         self.timeSpinBox.setObjectName("timeSpinBox")
