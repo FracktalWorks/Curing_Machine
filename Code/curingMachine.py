@@ -71,7 +71,18 @@ class AcMotor(object):
             self.acMotorPin = acMotorPin
             GPIO.setup(self.acMotorPin, GPIO.OUT)
             GPIO.output(self.acMotorPin, GPIO.LOW)
+
+    @run_async
+    def start(self):
+        if not Development:
+            GPIO.output(self.acMotorPin, (GPIO.HIGH))
         pass
+    @run_async
+    def stop(self):
+        if not Development:
+            GPIO.output(self.acMotorPin, GPIO.LOW)
+        pass
+
 
 '''
 Definition of UV LED. 
@@ -82,6 +93,17 @@ class UvLed(object):
             GPIO.cleanup()
             self.uvLedPin = uvLedPin
             GPIO.setup(self.uvLedPin, GPIO.OUT)
+            GPIO.output(self.uvLedPin, GPIO.LOW)
+
+    @run_async
+    def start(self):
+        if not Development:
+            GPIO.output(self.uvLedPin, (GPIO.HIGH))
+        pass
+
+    @run_async
+    def stop(self):
+        if not Development:
             GPIO.output(self.uvLedPin, GPIO.LOW)
         pass
 '''
@@ -94,6 +116,16 @@ class AcHeater(object):
             self.acHeaterPin = acHeaterPin
             GPIO.setup(self.acHeaterPin, GPIO.OUT)
             GPIO.output(self.acHeaterPin, GPIO.LOW)
+    @run_async
+    def start(self):
+        if not Development:
+            GPIO.output(self.acHeaterPin, (GPIO.HIGH))
+        pass
+
+    @run_async
+    def stop(self):
+        if not Development:
+            GPIO.output(self.acHeaterPin, GPIO.LOW)
         pass
 '''
 Definition of Magnetic Lock. 
@@ -104,6 +136,16 @@ class MagLock(object):
             GPIO.cleanup()
             self.magLockPin = magLockPin
             GPIO.setup(self.magLockPin, GPIO.OUT)
+            GPIO.output(self.magLockPin, GPIO.LOW)
+    @run_async
+    def start(self):
+        if not Development:
+            GPIO.output(self.magLockPin, (GPIO.HIGH))
+        pass
+
+    @run_async
+    def stop(self):
+        if not Development:
             GPIO.output(self.magLockPin, GPIO.LOW)
         pass
 
@@ -166,6 +208,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         self.timeElapsed = 0
         self.timeRemaining = 0
         self.pauseFlag = False
+        self.timerChangedFlag = False
 
 
 
@@ -189,6 +232,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         self.uvStartStopButton.pressed.connect(self.toggleUvLed)
         self.tempStartStopButton.pressed.connect(self.toggleHeater)
         self.timeSpinBox.valueChanged.connect(self.timerChangedAction)
+        self.materialComboBox.activated.connect(self.materialPresetSelected)
 
 
     def playPauseAction(self):
@@ -205,53 +249,73 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         set combobox to custom
         ungreay settings
         '''
-        if self.timeSpinBox.value() == 0:
-            QtWidgets.QMessageBox.warning(self,'Warning','Set Timer in Settings Tab First')
-        else:
-            if self.playPauseButton.isChecked() is False:
-                if self.uvStartStopButton.isChecked() :
-                    pass
-                if self.tempStartStopButton.isChecked() :
-                    pass
-                self.materialPreset.setText((self.materialComboBox.currentText()))
-                if  self.pauseFlag:
-                    self.curingTimerThreadObject = ThreadCuringTimer(self.timeRemaining)
-                    self.pauseFlag = False
-                else:
-                    self.curingTime = self.timeSpinBox.value()
-                    self.curingTimerThreadObject = ThreadCuringTimer(self.curingTime)
-
-                self.curingTimerThreadObject.curing_done_signal.connect(self.curingDoneAction)
-                self.curingTimerThreadObject.progress_bar_signal.connect(self.updateProgressBar)
-                self.curingTimerThreadObject.time_remaining_signal.connect(self.timeRemainingAction)
-                self.curingTimerThreadObject.start()
-
+        try:
+            if self.timeSpinBox.value() == 0:
+                QtWidgets.QMessageBox.warning(self,'Warning','Set Timer in Settings Tab First')
             else:
-                self.curingTimerThreadObject.stop()
-                self.pauseFlag = True
+                if self.playPauseButton.isChecked() is False:
+                    if self.uvStartStopButton.isChecked() :
+                        uvLed.start()
+                    if self.tempStartStopButton.isChecked() :
+                        heater.start()
+                    turnTable.start()
+                    magLock.start()
+                    self.controlTabWidget.setTabEnabled(1,False)
+                    self.materialPreset.setText((self.materialComboBox.currentText()))
+                    if  self.pauseFlag == True:
+                        if self.timerChangedFlag == False:
+                            self.curingTimerThreadObject = ThreadCuringTimer(self.timeRemaining)
+                        else:
+                            self.curingTime = self.timeSpinBox.value() * 60
+                            self.curingTimerThreadObject = ThreadCuringTimer(self.curingTime)
+                            self.timerChangedFlag = False
+                        self.pauseFlag = False
+                    else:
+                        self.curingTime = self.timeSpinBox.value()*60
+                        self.curingTimerThreadObject = ThreadCuringTimer(self.curingTime)
+                        self.timerChaingedFlag = False
+
+                    self.curingTimerThreadObject.curing_done_signal.connect(self.curingDoneAction)
+                    self.curingTimerThreadObject.progress_bar_signal.connect(self.updateProgressBar)
+                    self.curingTimerThreadObject.time_remaining_signal.connect(self.timeRemainingAction)
+                    self.curingTimerThreadObject.start()
+
+                else:
+                    self.curingTimerThreadObject.stop()
+                    self.pauseFlag = True
+                    self.controlTabWidget.setTabEnabled(1, True)
+                    heater.stop()
+                    turnTable.stop()
+                    uvLed.stop()
+                    magLock.stop()
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, 'Error', str(e))
+
 
     def stopAction(self):
         '''
-        ungreay settings
-        stop all working
-        clear progress bar
-        stop timer thread
-
+        Stops Curing
         '''
-        self.curingTimerThreadObject.stop()
-        self.pauseFlag = False
-        self.playPauseButton.setChecked(False)
-        self.progressBar.setValue(0)
-        self.timeRemainingLabel.setText(str(0) + " Seconds")
-        pass
+        try:
+            self.curingTimerThreadObject.stop()
+            self.pauseFlag = False
+            self.playPauseButton.setChecked(False)
+            self.progressBar.setValue(0)
+            self.timeRemainingLabel.setText(str(0) + " Seconds")
+            self.controlTabWidget.setTabEnabled(1,True)
+            self.timeSpinBox.setEnabled(True)
+            heater.stop()
+            turnTable.stop()
+            uvLed.stop()
+            magLock.stop()
+            self.timerChaingedFlag = False
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, 'Error', str(e))
+
     def toggleUvLed(self):
         '''
-        overide Material Preset combobox
-        set combobox to custom
-        retain previous state of other settings
-        toggle state of heater
+        Action to perform with UV LED button is toggled
         '''
-        self.materialComboBox.addItem('Custom')
         self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
         pass
     def toggleHeater(self):
@@ -261,7 +325,6 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         retain previous state of other settings
         toggle state of heater
         '''
-        self.materialComboBox.addItem('Custom')
         self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
         pass
     def timerChangedAction(self):
@@ -271,24 +334,59 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         retain previous state of other settings
         toggle state of heater
         '''
-        self.materialComboBox.addItem('Custom')
         self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
-        pass
+        self.timerChangedFlag = True
 
     def curingDoneAction(self):
-        print('curing done')
-        self.progressBar.setValue(100)
-        self.pauseFlag = False
-        self.playPauseButton.setChecked(False)
-        self.timeRemainingLabel.setText(str(0) + ' Seconds')
-        pass
+        try:
+            print('curing done')
+            self.progressBar.setValue(100)
+            self.pauseFlag = False
+            self.playPauseButton.setChecked(False)
+            self.timeRemainingLabel.setText(str(0) + ' Seconds')
+            self.controlTabWidget.setTabEnabled(1,True)
+            self.timeSpinBox.setEnabled(True)
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, 'Error', str(e))
 
     def updateProgressBar(self, timeRemaining):
-        self.timeRemainingLabel.setText(str(int(timeRemaining)) + ' Seconds')
-        self.progressBar.setValue((((self.curingTime - timeRemaining)/self.curingTime))*100)
+        self.timeRemainingLabel.setText(self.convert(timeRemaining))
+        if timeRemaining < self.curingTime:
+            self.progressBar.setValue((((self.curingTime - timeRemaining)/self.curingTime))*100)
         pass
     def timeRemainingAction(self,timeRemaining):
-        self.timeRemaining = timeRemaining
+        self.timeRemaining = timeRemaining #Time Remining in Seconds
+
+    def materialPresetSelected(self):
+        try:
+            if not materials[self.materialComboBox.currentText()] == 'Custom':
+                if materials[self.materialComboBox.currentText()]['temp'] == True:
+                    self.tempStartStopButton.setChecked(True)
+                else:
+                    self.tempStartStopButton.setChecked((False))
+                if materials[self.materialComboBox.currentText()]['uvLed'] == True:
+                    self.uvStartStopButton.setChecked(True)
+                else:
+                    self.uvStartStopButton.setChecked((False))
+                if materials[self.materialComboBox.currentText()]['Time'] > 0:
+                    self.timeSpinBox.setValue(materials[self.materialComboBox.currentText()]['Time'])
+                else:
+                    self.timeSpinBox.setValue(10)
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, 'Error', str(e))
+
+    # Python Program to Convert seconds
+    # into hours, minutes and seconds
+
+    def convert(self, seconds):
+        seconds = seconds % (24 * 3600)
+        hour = seconds // 3600
+        seconds %= 3600
+        minutes = seconds // 60
+        seconds %= 60
+
+        return "%d:%02d:%02d" % (hour, minutes, seconds)
+
 
 class ThreadCuringTimer(QtCore.QThread):
     curing_done_signal = QtCore.pyqtSignal()
@@ -300,18 +398,24 @@ class ThreadCuringTimer(QtCore.QThread):
         self.curingTime = curingTime
 
     def run(self):
-        self.startTime = time.time()
-        self.timeElapsed = (time.time() - self.startTime)
-        while self.timeElapsed <= self.curingTime:
-            self.progress_bar_signal.emit(self.curingTime - self.timeElapsed)
-            time.sleep(1)
+        try:
+            self.startTime = time.time()
             self.timeElapsed = (time.time() - self.startTime)
-        self.curing_done_signal.emit()
+            while self.timeElapsed <= self.curingTime:
+                self.progress_bar_signal.emit(self.curingTime - self.timeElapsed)
+                time.sleep(1)
+                self.timeElapsed = (time.time() - self.startTime)
+            self.curing_done_signal.emit()
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, 'Error', str(e))
     #
     def stop(self):
-        if self.timeElapsed <= self.curingTime:
-            self.time_remaining_signal.emit(self.curingTime - self.timeElapsed)
-        self.terminate()
+        try:
+            if self.timeElapsed <= self.curingTime:
+                self.time_remaining_signal.emit(self.curingTime - self.timeElapsed)
+            self.terminate()
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, 'Error', str(e))
 
 
 
