@@ -459,7 +459,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>120</y>
+        <y>90</y>
         <width>191</width>
         <height>71</height>
        </rect>
@@ -540,7 +540,7 @@ QPushButton:focus {
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>130</y>
+        <y>100</y>
         <width>241</width>
         <height>131</height>
        </rect>
@@ -844,7 +844,7 @@ QSpinBox::down-button:pressed {
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>130</y>
+        <y>100</y>
         <width>181</width>
         <height>31</height>
        </rect>
@@ -872,7 +872,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>190</y>
+        <y>160</y>
         <width>191</width>
         <height>71</height>
        </rect>
@@ -952,7 +952,7 @@ QPushButton:focus {
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>30</y>
+        <y>50</y>
         <width>381</width>
         <height>31</height>
        </rect>
@@ -979,7 +979,7 @@ QPushButton:focus {
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>60</y>
+        <y>0</y>
         <width>481</width>
         <height>51</height>
        </rect>
@@ -1106,8 +1106,8 @@ height: 30px;
      <widget class="QLabel" name="selectFilamentlabel_2">
       <property name="geometry">
        <rect>
-        <x>220</x>
-        <y>-4</y>
+        <x>10</x>
+        <y>244</y>
         <width>261</width>
         <height>31</height>
        </rect>
