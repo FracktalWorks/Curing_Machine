@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-Development = True
+Development = False
+
 
 import curingMachineUI
 from materials import materials
@@ -9,10 +10,12 @@ import sys
 import time
 from collections import OrderedDict
 import logging
+import RPi.GPIO as GPIO
 
 
 
-if not Development:
+#if not Development:
+if not Development:    
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BCM)  # Use the board numbering scheme
     GPIO.setwarnings(False)  # Disable GPIO warnings H
@@ -48,6 +51,7 @@ class BuzzerFeedback(object):
         if not Development:
             GPIO.cleanup()
             self.buzzerPin = buzzerPin
+            GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.buzzerPin, GPIO.OUT)
             GPIO.output(self.buzzerPin, GPIO.LOW)
         pass
@@ -55,12 +59,14 @@ class BuzzerFeedback(object):
     @run_async
     def buzz(self):
         if not Development:
+            GPIO.setup(self.buzzerPin, GPIO.OUT)
             GPIO.output(self.buzzerPin, (GPIO.HIGH))
             time.sleep(0.005)
+            GPIO.setup(self.buzzerPin, GPIO.OUT)
             GPIO.output(self.buzzerPin, GPIO.LOW)
         pass
 
-
+buzzer = BuzzerFeedback(12)
 '''
 Definition of AC motor. 
 '''
@@ -69,20 +75,25 @@ class AcMotor(object):
         if not Development:
             GPIO.cleanup()
             self.acMotorPin = acMotorPin
+            GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.acMotorPin, GPIO.OUT)
             GPIO.output(self.acMotorPin, GPIO.LOW)
 
     @run_async
     def start(self):
         if not Development:
+            GPIO.setup(self.acMotorPin, GPIO.OUT)
             GPIO.output(self.acMotorPin, (GPIO.HIGH))
         pass
     @run_async
     def stop(self):
         if not Development:
+            GPIO.setup(self.acMotorPin, GPIO.OUT)
             GPIO.output(self.acMotorPin, GPIO.LOW)
         pass
+GPIO.setmode(GPIO.BCM)
 
+turnTable = AcMotor(16)
 
 '''
 Definition of UV LED. 
@@ -92,20 +103,24 @@ class UvLed(object):
         if not Development:
             GPIO.cleanup()
             self.uvLedPin = uvLedPin
+            GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.uvLedPin, GPIO.OUT)
             GPIO.output(self.uvLedPin, GPIO.LOW)
 
     @run_async
     def start(self):
         if not Development:
+            GPIO.setup(self.uvLedPin, GPIO.OUT)
             GPIO.output(self.uvLedPin, (GPIO.HIGH))
         pass
 
     @run_async
     def stop(self):
         if not Development:
+            GPIO.setup(self.uvLedPin, GPIO.OUT)
             GPIO.output(self.uvLedPin, GPIO.LOW)
         pass
+uvLed = UvLed(26)
 '''
 Definition of AC Heater. 
 '''
@@ -114,19 +129,23 @@ class AcHeater(object):
         if not Development:
             GPIO.cleanup()
             self.acHeaterPin = acHeaterPin
+            GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.acHeaterPin, GPIO.OUT)
             GPIO.output(self.acHeaterPin, GPIO.LOW)
     @run_async
     def start(self):
         if not Development:
+            GPIO.setup(self.acHeaterPin, GPIO.OUT)
             GPIO.output(self.acHeaterPin, (GPIO.HIGH))
         pass
 
     @run_async
     def stop(self):
         if not Development:
+            GPIO.setup(self.acHeaterPin, GPIO.OUT)
             GPIO.output(self.acHeaterPin, GPIO.LOW)
         pass
+heater = AcHeater(20)
 '''
 Definition of Magnetic Lock. 
 '''
@@ -135,30 +154,33 @@ class MagLock(object):
         if not Development:
             GPIO.cleanup()
             self.magLockPin = magLockPin
+            GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.magLockPin, GPIO.OUT)
             GPIO.output(self.magLockPin, GPIO.LOW)
     @run_async
     def start(self):
         if not Development:
+            GPIO.setup(self.magLockPin, GPIO.OUT)
             GPIO.output(self.magLockPin, (GPIO.HIGH))
         pass
 
     @run_async
     def stop(self):
         if not Development:
+            GPIO.setup(self.magLockPin, GPIO.OUT)
             GPIO.output(self.magLockPin, GPIO.LOW)
         pass
 
-
+magLock = MagLock(21)
 '''
 Declaring Objects
 '''
 
-buzzer = BuzzerFeedback(12)
-turnTable = AcMotor(16)
-uvLed = UvLed(26)
-heater = AcHeater(20)
-magLock = MagLock(21)
+#buzzer = BuzzerFeedback(12)
+#turnTable = AcMotor(16)
+#uvLed = UvLed(26)
+#heater = AcHeater(20)
+#magLock = MagLock(21)
 
 '''
 To get the buzzer to beep on button press
@@ -427,9 +449,10 @@ if __name__ == '__main__':
     # Creates an object of type MainUiClass
     MainWindow = MainUiClass()
     MainWindow.show()
-    # MainWindow.showFullScreen()
-    # MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-    # Create NeoPixel object with appropriate configuration.
-    # charm = FlickCharm()
-    # charm.activateOn(MainWindow.FileListWidget)
+
+    #MainWindow.showFullScreen()
+    #MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+    #Create NeoPixel object with appropriate configuration.
+    #charm = FlickCharm()
+    #charm.activateOn(MainWindow.FileListWidget)
 sys.exit(app.exec_())
