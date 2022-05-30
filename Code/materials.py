@@ -1,14 +1,10 @@
 materials =  {
-            'ESD Resin': {'temp': True, 'uvLed':True, 'Time': 340},
-            'ESD Resin1': {'temp': True, 'uvLed':True, 'Time': 340},
-            'ESD Resin2': {'temp': True, 'uvLed':True, 'Time': 340},
-            'ESD Resin3': {'temp': True, 'uvLed':True, 'Time': 340},
-            'ESD Resin4': {'temp': True, 'uvLed':True, 'Time': 340},
-            'ESD Resin5': {'temp': True, 'uvLed':True, 'Time': 340},
-            'ESD Resin6': {'temp': True, 'uvLed':True, 'Time': 340},
-            'ESD Resin7': {'temp': True, 'uvLed':True, 'Time': 340},
-            'ESD Resin8': {'temp': True, 'uvLed':True, 'Time': 340},
-            'ESD Resin9': {'temp': True, 'uvLed':True, 'Time': 340},
+            'ESD Resin': {'Formlabs Grey/White V4': True, 'uvLed':True, 'Time': 30},
+            'ESD Resin1': {'Formlabs Clear V4': True, 'uvLed':True, 'Time': 15},
+            'ESD Resin2': {'Formlabs High Temp V2': True, 'uvLed':True, 'Time': 120},
+            'ESD Resin3': {'Formlabs Surgical Guide': True, 'uvLed':True, 'Time': 30},
+            'ESD Resin4': {'Formlabs Rigid 10K': True, 'uvLed':True, 'Time': 60},
+            'ESD Resin5': {'Formlabs Flexible 80A ': True, 'uvLed':True, 'Time': 10},
             'Custom': {'temp': 0, 'uvLed':0, 'Time': 0}
 }
 
