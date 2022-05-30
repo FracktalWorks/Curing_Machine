@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-Development = True
+Development = False
 
 import curingMachineUI
 from materials import materials
