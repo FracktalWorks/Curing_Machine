@@ -172,20 +172,21 @@ class MagLock(object):
             self.magLockPin = magLockPin
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.magLockPin, GPIO.OUT)
-            GPIO.output(self.magLockPin, GPIO.LOW)
+            GPIO.output(self.magLockPin, (GPIO.HIGH))
 
     @run_async
     def start(self):
         if not Development:
             GPIO.setup(self.magLockPin, GPIO.OUT)
-            GPIO.output(self.magLockPin, (GPIO.HIGH))
+            GPIO.output(self.magLockPin, GPIO.LOW)
+
         pass
 
     @run_async
     def stop(self):
         if not Development:
             GPIO.setup(self.magLockPin, GPIO.OUT)
-            GPIO.output(self.magLockPin, GPIO.LOW)
+            GPIO.output(self.magLockPin, (GPIO.HIGH))
         pass
 
 
