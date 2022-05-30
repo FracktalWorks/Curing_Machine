@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-Development = False
-
+Development = True
 
 import curingMachineUI
 from materials import materials
@@ -10,22 +9,20 @@ import sys
 import time
 from collections import OrderedDict
 import logging
-import RPi.GPIO as GPIO
 
-
-
-#if not Development:
-if not Development:    
+# if not Development:
+if not Development:
     import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BCM)
     GPIO.setmode(GPIO.BCM)  # Use the board numbering scheme
     GPIO.setwarnings(False)  # Disable GPIO warnings H
-
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     def _fromUtf8(s):
         return s
+
 
 def run_async(func):
     '''
@@ -46,6 +43,8 @@ def run_async(func):
 '''
 Definition of Buzzer. 
 '''
+
+
 class BuzzerFeedback(object):
     def __init__(self, buzzerPin):
         if not Development:
@@ -66,10 +65,13 @@ class BuzzerFeedback(object):
             GPIO.output(self.buzzerPin, GPIO.LOW)
         pass
 
+
 buzzer = BuzzerFeedback(12)
 '''
 Definition of AC motor. 
 '''
+
+
 class AcMotor(object):
     def __init__(self, acMotorPin):
         if not Development:
@@ -85,19 +87,24 @@ class AcMotor(object):
             GPIO.setup(self.acMotorPin, GPIO.OUT)
             GPIO.output(self.acMotorPin, (GPIO.HIGH))
         pass
+
     @run_async
     def stop(self):
         if not Development:
             GPIO.setup(self.acMotorPin, GPIO.OUT)
             GPIO.output(self.acMotorPin, GPIO.LOW)
         pass
-GPIO.setmode(GPIO.BCM)
+
+
+
 
 turnTable = AcMotor(16)
 
 '''
 Definition of UV LED. 
 '''
+
+
 class UvLed(object):
     def __init__(self, uvLedPin):
         if not Development:
@@ -120,10 +127,14 @@ class UvLed(object):
             GPIO.setup(self.uvLedPin, GPIO.OUT)
             GPIO.output(self.uvLedPin, GPIO.LOW)
         pass
+
+
 uvLed = UvLed(26)
 '''
 Definition of AC Heater. 
 '''
+
+
 class AcHeater(object):
     def __init__(self, acHeaterPin):
         if not Development:
@@ -132,6 +143,7 @@ class AcHeater(object):
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.acHeaterPin, GPIO.OUT)
             GPIO.output(self.acHeaterPin, GPIO.LOW)
+
     @run_async
     def start(self):
         if not Development:
@@ -145,10 +157,14 @@ class AcHeater(object):
             GPIO.setup(self.acHeaterPin, GPIO.OUT)
             GPIO.output(self.acHeaterPin, GPIO.LOW)
         pass
+
+
 heater = AcHeater(20)
 '''
 Definition of Magnetic Lock. 
 '''
+
+
 class MagLock(object):
     def __init__(self, magLockPin):
         if not Development:
@@ -157,6 +173,7 @@ class MagLock(object):
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.magLockPin, GPIO.OUT)
             GPIO.output(self.magLockPin, GPIO.LOW)
+
     @run_async
     def start(self):
         if not Development:
@@ -171,16 +188,17 @@ class MagLock(object):
             GPIO.output(self.magLockPin, GPIO.LOW)
         pass
 
+
 magLock = MagLock(21)
 '''
 Declaring Objects
 '''
 
-#buzzer = BuzzerFeedback(12)
-#turnTable = AcMotor(16)
-#uvLed = UvLed(26)
-#heater = AcHeater(20)
-#magLock = MagLock(21)
+# buzzer = BuzzerFeedback(12)
+# turnTable = AcMotor(16)
+# uvLed = UvLed(26)
+# heater = AcHeater(20)
+# magLock = MagLock(21)
 
 '''
 To get the buzzer to beep on button press
@@ -188,6 +206,7 @@ To get the buzzer to beep on button press
 
 OriginalPushButton = QtWidgets.QPushButton
 OriginalToolButton = QtWidgets.QToolButton
+
 
 class QPushButtonFeedback(QtWidgets.QPushButton):
     def mousePressEvent(self, QMouseEvent):
@@ -205,10 +224,7 @@ QtWidgets.QToolButton = QToolButtonFeedback
 QtWidgets.QPushButton = QPushButtonFeedback
 
 
-
-
 class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
-    
 
     def __init__(self):
         '''
@@ -232,8 +248,6 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         self.pauseFlag = False
         self.timerChangedFlag = False
 
-
-
     def setupUi(self, MainWindow):
         super(MainUiClass, self).setupUi(MainWindow)
         font = QtGui.QFont()
@@ -256,7 +270,6 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         self.timeSpinBox.valueChanged.connect(self.timerChangedAction)
         self.materialComboBox.activated.connect(self.materialPresetSelected)
 
-
     def playPauseAction(self):
         '''
         get status of all the settings buttons
@@ -273,18 +286,18 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         '''
         try:
             if self.timeSpinBox.value() == 0:
-                QtWidgets.QMessageBox.warning(self,'Warning','Set Timer in Settings Tab First')
+                QtWidgets.QMessageBox.warning(self, 'Warning', 'Set Timer in Settings Tab First')
             else:
                 if self.playPauseButton.isChecked() is False:
-                    if self.uvStartStopButton.isChecked() :
+                    if self.uvStartStopButton.isChecked():
                         uvLed.start()
-                    if self.tempStartStopButton.isChecked() :
+                    if self.tempStartStopButton.isChecked():
                         heater.start()
                     turnTable.start()
                     magLock.start()
-                    self.controlTabWidget.setTabEnabled(1,False)
+                    self.controlTabWidget.setTabEnabled(1, False)
                     self.materialPreset.setText((self.materialComboBox.currentText()))
-                    if  self.pauseFlag == True:
+                    if self.pauseFlag == True:
                         if self.timerChangedFlag == False:
                             self.curingTimerThreadObject = ThreadCuringTimer(self.timeRemaining)
                         else:
@@ -293,7 +306,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
                             self.timerChangedFlag = False
                         self.pauseFlag = False
                     else:
-                        self.curingTime = self.timeSpinBox.value()*60
+                        self.curingTime = self.timeSpinBox.value() * 60
                         self.curingTimerThreadObject = ThreadCuringTimer(self.curingTime)
                         self.timerChaingedFlag = False
 
@@ -313,7 +326,6 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         except Exception as e:
             QtWidgets.QMessageBox.warning(self, 'Error', str(e))
 
-
     def stopAction(self):
         '''
         Stops Curing
@@ -324,7 +336,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
             self.playPauseButton.setChecked(False)
             self.progressBar.setValue(0)
             self.timeRemainingLabel.setText(str(0) + " Seconds")
-            self.controlTabWidget.setTabEnabled(1,True)
+            self.controlTabWidget.setTabEnabled(1, True)
             self.timeSpinBox.setEnabled(True)
             heater.stop()
             turnTable.stop()
@@ -340,6 +352,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         '''
         self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
         pass
+
     def toggleHeater(self):
         '''
         overide Material Preset combobox
@@ -349,6 +362,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         '''
         self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
         pass
+
     def timerChangedAction(self):
         '''
         overide Material Preset combobox
@@ -366,18 +380,23 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
             self.pauseFlag = False
             self.playPauseButton.setChecked(False)
             self.timeRemainingLabel.setText(str(0) + ' Seconds')
-            self.controlTabWidget.setTabEnabled(1,True)
+            self.controlTabWidget.setTabEnabled(1, True)
             self.timeSpinBox.setEnabled(True)
+            heater.stop()
+            turnTable.stop()
+            uvLed.stop()
+            magLock.stop()
         except Exception as e:
             QtWidgets.QMessageBox.warning(self, 'Error', str(e))
 
     def updateProgressBar(self, timeRemaining):
         self.timeRemainingLabel.setText(self.convert(timeRemaining))
         if timeRemaining < self.curingTime:
-            self.progressBar.setValue((((self.curingTime - timeRemaining)/self.curingTime))*100)
+            self.progressBar.setValue((((self.curingTime - timeRemaining) / self.curingTime)) * 100)
         pass
-    def timeRemainingAction(self,timeRemaining):
-        self.timeRemaining = timeRemaining #Time Remining in Seconds
+
+    def timeRemainingAction(self, timeRemaining):
+        self.timeRemaining = timeRemaining  # Time Remining in Seconds
 
     def materialPresetSelected(self):
         try:
@@ -430,6 +449,7 @@ class ThreadCuringTimer(QtCore.QThread):
             self.curing_done_signal.emit()
         except Exception as e:
             QtWidgets.QMessageBox.warning(self, 'Error', str(e))
+
     #
     def stop(self):
         try:
@@ -440,9 +460,6 @@ class ThreadCuringTimer(QtCore.QThread):
             QtWidgets.QMessageBox.warning(self, 'Error', str(e))
 
 
-
-
-
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     # Intialize the library (must be called once before other functions).
@@ -450,9 +467,9 @@ if __name__ == '__main__':
     MainWindow = MainUiClass()
     MainWindow.show()
 
-    #MainWindow.showFullScreen()
-    #MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-    #Create NeoPixel object with appropriate configuration.
-    #charm = FlickCharm()
-    #charm.activateOn(MainWindow.FileListWidget)
+    # MainWindow.showFullScreen()
+    # MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+    # Create NeoPixel object with appropriate configuration.
+    # charm = FlickCharm()
+    # charm.activateOn(MainWindow.FileListWidget)
 sys.exit(app.exec_())
