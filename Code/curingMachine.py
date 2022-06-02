@@ -339,8 +339,8 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         wlan0_config_file.write(u"update_config=1\n")
         wlan0_config_file.write(u"network={\n")
         wlan0_config_file.write(u'ssid="' + str(ascii_ssid) + '"\n')
-        # if self.hiddenCheckBox.isChecked():
-        #     wlan0_config_file.write(u'scan_ssid=1\n')
+        if self.hiddenCheckBox.isChecked():
+            wlan0_config_file.write(u'scan_ssid=1\n')
         # wlan0_config_file.write(u"scan_ssid=1\n")
         if str(self.wifiPasswordLineEdit.text()) != "":
             wlan0_config_file.write(u'psk="' + str(self.wifiPasswordLineEdit.text()) + '"\n')

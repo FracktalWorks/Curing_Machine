@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="abeb5947-cbcf-4085-9e75-3538e0f75c91" name="Default Changelist" comment="" />
+=======
+    <list default="true" id="abeb5947-cbcf-4085-9e75-3538e0f75c91" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/Code/curingMachine.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/curingMachine.py" afterDir="false" />
+    </list>
+>>>>>>> parent of f34e108 (test)
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
