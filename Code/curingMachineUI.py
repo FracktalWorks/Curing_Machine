@@ -937,7 +937,7 @@ class Ui_MainWindow(object):
         self.timeRemainingLabel.setText(_translate("MainWindow", "0 Seconds"))
         self.materialPreset.setText(_translate("MainWindow", "None"))
         self.materialPresetLabel.setText(_translate("MainWindow", "Material Preset:"))
-        self.ipStatus.setText(_translate("MainWindow", "Not Connected"))
+        self.ipStatus.setText(_translate("MainWindow", "Wi-Fi Not Connected"))
         self.controlTabWidget.setTabText(self.controlTabWidget.indexOf(self.operateTab), _translate("MainWindow", "Operate"))
         self.timeSpinBox.setSuffix(_translate("MainWindow", " min"))
         self.timeLabel.setText(_translate("MainWindow", "Time :"))
