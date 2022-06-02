@@ -326,6 +326,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         self.wifiSettingsCancelButton.pressed.connect(
             lambda: self.stackedWidget.setCurrentWidget(self.mainPage))
         self.wifiSettingsDoneButton.pressed.connect(self.acceptWifiSettings)
+        self.setIPStatus()
 
     ''' +++++++++++++++++++++++++++++++++Wifi Config+++++++++++++++++++++++++++++++++++ '''
 
@@ -355,7 +356,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
                                             icon="exclamation-mark.png",
                                             buttons=QtWidgets.QMessageBox.Cancel)
         if self.wifiMessageBox.exec_() in {QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Cancel}:
-            self.stackedWidget.setCurrentWidget(self.networkSettingsPage)
+            self.stackedWidget.setCurrentWidget(self.mainPage)
 
     def wifiReconnectResult(self, x):
         self.wifiMessageBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -391,6 +392,22 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         scan_result = [s.strip('"') for s in scan_result]
         scan_result = filter(None, scan_result)
         return scan_result
+
+    @run_async
+    def setIPStatus(self):
+        '''
+        Function to update IP address of printer on the status bar. Refreshes at a particular interval.
+        '''
+
+        try:
+            if getIP("wlan0"):
+                self.ipStatus.setText(getIP("wlan0"))
+            else:
+                self.ipStatus.setText("WiFi Not connected")
+
+        except:
+            self.ipStatus.setText("Not connected")
+        time.sleep(60)
 
 
     def startKeyboard(self, returnFn, onlyNumeric=False, noSpace=False, text=""):
