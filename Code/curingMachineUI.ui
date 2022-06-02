@@ -144,7 +144,7 @@ QTabBar:focus {
         <property name="geometry">
          <rect>
           <x>80</x>
-          <y>140</y>
+          <y>160</y>
           <width>161</width>
           <height>91</height>
          </rect>
@@ -224,7 +224,7 @@ QPushButton:focus {
         <property name="geometry">
          <rect>
           <x>240</x>
-          <y>140</y>
+          <y>160</y>
           <width>161</width>
           <height>91</height>
          </rect>
@@ -344,7 +344,7 @@ QProgressBar {
         <property name="geometry">
          <rect>
           <x>60</x>
-          <y>70</y>
+          <y>90</y>
           <width>161</width>
           <height>21</height>
          </rect>
@@ -371,7 +371,7 @@ QProgressBar {
         <property name="geometry">
          <rect>
           <x>230</x>
-          <y>70</y>
+          <y>90</y>
           <width>211</width>
           <height>21</height>
          </rect>
@@ -403,7 +403,7 @@ background-color: rgba(255, 255, 255, 0);</string>
         <property name="geometry">
          <rect>
           <x>230</x>
-          <y>100</y>
+          <y>120</y>
           <width>211</width>
           <height>21</height>
          </rect>
@@ -435,7 +435,7 @@ background-color: rgba(255, 255, 255, 0);</string>
         <property name="geometry">
          <rect>
           <x>60</x>
-          <y>100</y>
+          <y>120</y>
           <width>161</width>
           <height>21</height>
          </rect>
@@ -456,33 +456,6 @@ background-color: rgba(255, 255, 255, 0);</string>
         </property>
         <property name="text">
          <string>Material Preset:</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="ipStatus">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>240</y>
-          <width>161</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>8</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="contextMenuPolicy">
-         <enum>Qt::NoContextMenu</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);</string>
-        </property>
-        <property name="text">
-         <string>Not Connected</string>
         </property>
        </widget>
       </widget>
@@ -1127,7 +1100,7 @@ height: 30px;
         <property name="editable">
          <bool>false</bool>
         </property>
-        <property name="currentText" stdset="0">
+        <property name="currentText">
          <string/>
         </property>
         <property name="maxVisibleItems">
@@ -1148,7 +1121,7 @@ height: 30px;
          <rect>
           <x>10</x>
           <y>244</y>
-          <width>321</width>
+          <width>261</width>
           <height>31</height>
          </rect>
         </property>
@@ -1255,7 +1228,35 @@ QPushButton:focus {
          <bool>false</bool>
         </property>
        </widget>
+       <widget class="QLabel" name="selectFilamentlabel_3">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>244</y>
+          <width>161</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>MS Shell Dlg 2</family>
+          <pointsize>8</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="contextMenuPolicy">
+         <enum>Qt::NoContextMenu</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Not Connected</string>
+        </property>
+       </widget>
        <zorder>selectFilamentlabel_2</zorder>
+       <zorder>selectFilamentlabel_3</zorder>
        <zorder>uvStartStopButton</zorder>
        <zorder>timeSpinBox</zorder>
        <zorder>timeLabel</zorder>
