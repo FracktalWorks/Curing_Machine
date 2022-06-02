@@ -319,6 +319,8 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         self.materialComboBox.activated.connect(self.materialPresetSelected)
         self.wifiSettingsButton.pressed.connect(self.wifiSettings)
         self.wifiPasswordLineEdit.clicked_signal.connect(lambda: self.startKeyboard(self.wifiPasswordLineEdit.setText))
+        self.stackedWidget.setCurrentWidget(self.mainPage)
+
 
         # WifiSetings page
         self.wifiSettingsSSIDKeyboardButton.pressed.connect(
