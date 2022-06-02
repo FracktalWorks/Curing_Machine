@@ -318,6 +318,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         self.timeSpinBox.valueChanged.connect(self.timerChangedAction)
         self.materialComboBox.activated.connect(self.materialPresetSelected)
         self.wifiSettingsButton.pressed.connect(self.wifiSettings)
+        self.wifiPasswordLineEdit.clicked_signal.connect(lambda: self.startKeyboard(self.wifiPasswordLineEdit.setText))
 
         # WifiSetings page
         self.wifiSettingsSSIDKeyboardButton.pressed.connect(
@@ -501,7 +502,7 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         retain previous state of other settings
         toggle state of heater
         '''
-        self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
+        #self.materialComboBox.setCurrentIndex(self.materialComboBox.findText('Custom'))
         self.timerChangedFlag = True
 
     def curingDoneAction(self):
