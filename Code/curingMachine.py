@@ -7,12 +7,23 @@ from materials import materials
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import time
+import keyboard
+import dialog
+import styles
+import re
+import logging
+import io
+import requests
+import sys
+import subprocess
+
 from collections import OrderedDict
 import logging
 
 # if not Development:
 if not Development:
     import RPi.GPIO as GPIO
+
     GPIO.setmode(GPIO.BCM)
     GPIO.setmode(GPIO.BCM)  # Use the board numbering scheme
     GPIO.setwarnings(False)  # Disable GPIO warnings H
@@ -23,6 +34,28 @@ except AttributeError:
     def _fromUtf8(s):
         return s
 
+def getIP(interface):
+    try:
+        scan_result = \
+            (subprocess.Popen("ifconfig | grep " + interface + " -A 1", stdout=subprocess.PIPE, shell=True).communicate()[0]).decode("utf-8")
+        # Processing STDOUT into a dictionary that later will be converted to a json file later
+        rInetAddr = r"inet\s*([\d.]+)"
+        rInet6Addr = r"inet6"
+        mt6Ip = re.search(rInet6Addr, scan_result)
+        mtIp = re.search(rInetAddr, scan_result)
+        if not(mt6Ip) and mtIp and len(mtIp.groups()) == 1:
+            return str(mtIp.group(1))
+    except:
+        return None
+def getWifiAp():
+    try:
+        ap = subprocess.Popen("iwgetid -r",
+                              stdout=subprocess.PIPE, shell=True).communicate()[0].rstrip()
+        if not ap:
+            return "Not connected"
+        return ap.decode("utf-8")
+    except:
+        return "Error"
 
 def run_async(func):
     '''
@@ -224,6 +257,14 @@ class QToolButtonFeedback(QtWidgets.QToolButton):
 QtWidgets.QToolButton = QToolButtonFeedback
 QtWidgets.QPushButton = QPushButtonFeedback
 
+class ClickableLineEdit(QtWidgets.QLineEdit):
+    clicked_signal = QtCore.pyqtSignal()
+    def __init__(self, parent):
+        QtWidgets.QLineEdit.__init__(self, parent)
+    def mousePressEvent(self, QMouseEvent):
+        buzzer.buzz()
+        self.clicked_signal.emit()
+
 
 class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
 
@@ -257,6 +298,12 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         self.materialComboBox.addItems(sorted(materials.keys()))
         # print (materials.keys())
 
+        self.wifiPasswordLineEdit = ClickableLineEdit(self.wifiSettingsPage)
+        self.wifiPasswordLineEdit.setGeometry(QtCore.QRect(0, 170, 480, 60))
+        self.wifiPasswordLineEdit.setFont(font)
+        self.wifiPasswordLineEdit.setStyleSheet(styles.textedit)
+        self.wifiPasswordLineEdit.setObjectName(_fromUtf8("wifiPasswordLineEdit"))
+
     def setActions(self):
 
         '''
@@ -270,6 +317,89 @@ class MainUiClass(QtWidgets.QMainWindow, curingMachineUI.Ui_MainWindow):
         self.tempStartStopButton.pressed.connect(self.toggleHeater)
         self.timeSpinBox.valueChanged.connect(self.timerChangedAction)
         self.materialComboBox.activated.connect(self.materialPresetSelected)
+        self.wifiSettingsButton.pressed.connect(self.wifiSettings)
+
+        # WifiSetings page
+        self.wifiSettingsSSIDKeyboardButton.pressed.connect(
+            lambda: self.startKeyboard(self.wifiSettingsComboBox.addItem))
+        self.wifiSettingsCancelButton.pressed.connect(
+            lambda: self.stackedWidget.setCurrentWidget(self.mainPage))
+        self.wifiSettingsDoneButton.pressed.connect(self.acceptWifiSettings)
+
+    ''' +++++++++++++++++++++++++++++++++Wifi Config+++++++++++++++++++++++++++++++++++ '''
+
+    def acceptWifiSettings(self):
+        wlan0_config_file = io.open("/etc/wpa_supplicant/wpa_supplicant.conf", "r+", encoding='utf8')
+        wlan0_config_file.truncate()
+        ascii_ssid = self.wifiSettingsComboBox.currentText()
+        # unicode_ssid = ascii_ssid.decode('string_escape').decode('utf-8')
+        wlan0_config_file.write(u"country=IN\n")
+        wlan0_config_file.write(u"ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n")
+        wlan0_config_file.write(u"update_config=1\n")
+        wlan0_config_file.write(u"network={\n")
+        wlan0_config_file.write(u'ssid="' + str(ascii_ssid) + '"\n')
+        if self.hiddenCheckBox.isChecked():
+            wlan0_config_file.write(u'scan_ssid=1\n')
+        # wlan0_config_file.write(u"scan_ssid=1\n")
+        if str(self.wifiPasswordLineEdit.text()) != "":
+            wlan0_config_file.write(u'psk="' + str(self.wifiPasswordLineEdit.text()) + '"\n')
+        # wlan0_config_file.write(u"key_mgmt=WPA-PSK\n")
+        wlan0_config_file.write(u'}')
+        wlan0_config_file.close()
+        self.restartWifiThreadObject = ThreadRestartNetworking(ThreadRestartNetworking.WLAN)
+        self.restartWifiThreadObject.signal.connect(self.wifiReconnectResult)
+        self.restartWifiThreadObject.start()
+        self.wifiMessageBox = dialog.dialog(self,
+                                            "Restarting networking, please wait...",
+                                            icon="exclamation-mark.png",
+                                            buttons=QtWidgets.QMessageBox.Cancel)
+        if self.wifiMessageBox.exec_() in {QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Cancel}:
+            self.stackedWidget.setCurrentWidget(self.networkSettingsPage)
+
+    def wifiReconnectResult(self, x):
+        self.wifiMessageBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        if x is not None:
+            print("Ouput from signal " + x)
+            self.wifiMessageBox.setLocalIcon('success.png')
+            self.wifiMessageBox.setText('Connected, IP: ' + x)
+            self.wifiMessageBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            self.ipStatus.setText(x)  # sets the IP addr. in the status bar
+
+        else:
+            self.wifiMessageBox.setText("Not able to connect to WiFi")
+
+
+    def wifiSettings(self):
+        self.stackedWidget.setCurrentWidget(self.wifiSettingsPage)
+        self.wifiSettingsComboBox.clear()
+        self.wifiSettingsComboBox.addItems(self.scan_wifi())
+
+    def scan_wifi(self):
+        '''
+        uses linux shell and WIFI interface to scan available networks
+        :return: dictionary of the SSID and the signal strength
+        '''
+        # scanData = {}
+        # print "Scanning available wireless signals available to wlan0"
+        scan_result = \
+            subprocess.Popen("iwlist wlan0 scan | grep 'ESSID'", stdout=subprocess.PIPE, shell=True).communicate()[0]
+        # Processing STDOUT into a dictionary that later will be converted to a json file later
+        scan_result = scan_result.decode('utf8').split(
+            'ESSID:')  # each ssid and pass from an item in a list ([ssid pass,ssid paas])
+        scan_result = [s.strip() for s in scan_result]
+        scan_result = [s.strip('"') for s in scan_result]
+        scan_result = filter(None, scan_result)
+        return scan_result
+
+
+    def startKeyboard(self, returnFn, onlyNumeric=False, noSpace=False, text=""):
+        '''
+        starts the keyboard screen for entering Password
+        '''
+        keyBoardobj = keyboard.Keyboard(onlyNumeric=onlyNumeric, noSpace=noSpace, text=text)
+        keyBoardobj.keyboard_signal.connect(returnFn)
+        keyBoardobj.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        keyBoardobj.show()
 
     def playPauseAction(self):
         '''
@@ -459,6 +589,45 @@ class ThreadCuringTimer(QtCore.QThread):
             self.terminate()
         except Exception as e:
             QtWidgets.QMessageBox.warning(self, 'Error', str(e))
+
+
+class ThreadRestartNetworking(QtCore.QThread):
+    WLAN = "wlan0"
+    ETH = "eth0"
+    signal = QtCore.pyqtSignal('PyQt_PyObject')
+
+    def __init__(self, interface):
+        super(ThreadRestartNetworking, self).__init__()
+        self.interface = interface
+    def run(self):
+        self.restart_interface()
+        attempt = 0
+        while attempt < 3:
+            # print(getIP(self.interface))
+            if getIP(self.interface):
+                self.signal.emit(getIP(self.interface))
+                break
+            else:
+                attempt += 1
+                time.sleep(5)
+        if attempt >= 3:
+            self.signal.emit(None)
+
+    def restart_interface(self):
+        '''
+        restars wlan0 wireless interface to use new changes in wpa_supplicant.conf file
+        :return:
+        '''
+        if self.interface == "wlan0":
+            subprocess.call(["wpa_cli","-i",  self.interface, "reconfigure"], shell=False)
+        if self.interface == "eth0":
+            subprocess.call(["ifconfig",  self.interface, "down"], shell=False)
+            time.sleep(1)
+            subprocess.call(["ifconfig", self.interface, "up"], shell=False)
+        # subprocess.call(["ifdown", "--force", self.interface], shell=False)
+        # subprocess.call(["ifup", "--force", self.interface], shell=False)
+        time.sleep(5)
+
 
 
 if __name__ == '__main__':

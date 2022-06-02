@@ -14,12 +14,17 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(480, 320)
+        MainWindow.resize(481, 321)
         MainWindow.setStyleSheet("\n"
 "background-color: rgb(40, 40, 40);")
         self.mainApplication = QtWidgets.QWidget(MainWindow)
         self.mainApplication.setObjectName("mainApplication")
-        self.controlTabWidget = QtWidgets.QTabWidget(self.mainApplication)
+        self.stackedWidget = QtWidgets.QStackedWidget(self.mainApplication)
+        self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 481, 321))
+        self.stackedWidget.setObjectName("stackedWidget")
+        self.mainPage = QtWidgets.QWidget()
+        self.mainPage.setObjectName("mainPage")
+        self.controlTabWidget = QtWidgets.QTabWidget(self.mainPage)
         self.controlTabWidget.setGeometry(QtCore.QRect(0, 0, 492, 321))
         font = QtGui.QFont()
         font.setFamily("Gotham")
@@ -612,13 +617,307 @@ class Ui_MainWindow(object):
         self.selectFilamentlabel_2.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.selectFilamentlabel_2.setStyleSheet("color: rgb(255, 255, 255);")
         self.selectFilamentlabel_2.setObjectName("selectFilamentlabel_2")
+        self.wifiSettingsButton = QtWidgets.QPushButton(self.settingsTab)
+        self.wifiSettingsButton.setGeometry(QtCore.QRect(400, 240, 61, 31))
+        self.wifiSettingsButton.setMinimumSize(QtCore.QSize(0, 0))
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        self.wifiSettingsButton.setFont(font)
+        self.wifiSettingsButton.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+        self.wifiSettingsButton.setStyleSheet("QPushButton {\n"
+"    border: 1px solid rgb(87, 87, 87);\n"
+"    background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.188, stop:0 rgba(180, 180, 180, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"\n"
+"border-top-left-radius: 15px;\n"
+"border-top-right-radius: 15px;\n"
+"border-bottom-left-radius: 15px;\n"
+"border-bottom-right-radius: 15px;\n"
+"    \n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"\n"
+"    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                      stop: 0 #dadbde, stop: 1 #f6f7fa);\n"
+"}\n"
+"\n"
+"QPushButton:flat {\n"
+"    border: none; /* no border for a flat push button */\n"
+"}\n"
+"\n"
+"QPushButton:default {\n"
+"    border-color: navy; /* make the default button prominent */\n"
+"}\n"
+"\n"
+"QPushButton:focus {\n"
+"    outline: none;\n"
+"}")
+        self.wifiSettingsButton.setText("")
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap("templates/img/settings.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        icon5.addPixmap(QtGui.QPixmap("templates/img/settings_white.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        self.controlTabWidget.addTab(self.settingsTab, icon5, "")
+        icon5.addPixmap(QtGui.QPixmap("templates/img/wifi.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.wifiSettingsButton.setIcon(icon5)
+        self.wifiSettingsButton.setIconSize(QtCore.QSize(30, 30))
+        self.wifiSettingsButton.setCheckable(True)
+        self.wifiSettingsButton.setChecked(False)
+        self.wifiSettingsButton.setAutoRepeatDelay(296)
+        self.wifiSettingsButton.setAutoDefault(False)
+        self.wifiSettingsButton.setDefault(False)
+        self.wifiSettingsButton.setFlat(False)
+        self.wifiSettingsButton.setObjectName("wifiSettingsButton")
+        self.selectFilamentlabel_3 = QtWidgets.QLabel(self.settingsTab)
+        self.selectFilamentlabel_3.setGeometry(QtCore.QRect(270, 244, 161, 31))
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        font.setPointSize(8)
+        font.setBold(False)
+        font.setWeight(50)
+        self.selectFilamentlabel_3.setFont(font)
+        self.selectFilamentlabel_3.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+        self.selectFilamentlabel_3.setStyleSheet("color: rgb(255, 255, 255);")
+        self.selectFilamentlabel_3.setObjectName("selectFilamentlabel_3")
+        self.selectFilamentlabel_2.raise_()
+        self.selectFilamentlabel_3.raise_()
+        self.uvStartStopButton.raise_()
+        self.timeSpinBox.raise_()
+        self.timeLabel.raise_()
+        self.tempStartStopButton.raise_()
+        self.selectFilamentlabel.raise_()
+        self.materialComboBox.raise_()
+        self.wifiSettingsButton.raise_()
+        icon6 = QtGui.QIcon()
+        icon6.addPixmap(QtGui.QPixmap("templates/img/settings.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon6.addPixmap(QtGui.QPixmap("templates/img/settings_white.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.controlTabWidget.addTab(self.settingsTab, icon6, "")
+        self.stackedWidget.addWidget(self.mainPage)
+        self.wifiSettingsPage = QtWidgets.QWidget()
+        self.wifiSettingsPage.setObjectName("wifiSettingsPage")
+        self.passwordlabel = QtWidgets.QLabel(self.wifiSettingsPage)
+        self.passwordlabel.setGeometry(QtCore.QRect(0, 130, 461, 31))
+        font = QtGui.QFont()
+        font.setFamily("Gotham Light")
+        font.setPointSize(14)
+        font.setBold(False)
+        font.setWeight(50)
+        self.passwordlabel.setFont(font)
+        self.passwordlabel.setStyleSheet("color: rgb(255, 255, 255);")
+        self.passwordlabel.setObjectName("passwordlabel")
+        self.wifiSettingsDoneButton = QtWidgets.QPushButton(self.wifiSettingsPage)
+        self.wifiSettingsDoneButton.setGeometry(QtCore.QRect(0, 230, 251, 91))
+        font = QtGui.QFont()
+        font.setFamily("Gotham")
+        font.setPointSize(13)
+        self.wifiSettingsDoneButton.setFont(font)
+        self.wifiSettingsDoneButton.setStyleSheet("QPushButton {\n"
+"     border: 1px solid rgb(87, 87, 87);\n"
+"    background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.188, stop:0 rgba(180, 180, 180, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"\n"
+"\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                      stop: 0 #dadbde, stop: 1 #f6f7fa);\n"
+"}\n"
+"\n"
+"QPushButton:flat {\n"
+"    border: none; /* no border for a flat push button */\n"
+"}\n"
+"\n"
+"QPushButton:default {\n"
+"    border-color: navy; /* make the default button prominent */\n"
+"}\n"
+"\n"
+"QPushButton:focus {\n"
+"    outline: none;\n"
+"}")
+        self.wifiSettingsDoneButton.setIconSize(QtCore.QSize(40, 40))
+        self.wifiSettingsDoneButton.setObjectName("wifiSettingsDoneButton")
+        self.wifiSettingsComboBox = QtWidgets.QComboBox(self.wifiSettingsPage)
+        self.wifiSettingsComboBox.setGeometry(QtCore.QRect(0, 40, 421, 51))
+        font = QtGui.QFont()
+        font.setFamily("Gotham")
+        font.setPointSize(20)
+        self.wifiSettingsComboBox.setFont(font)
+        self.wifiSettingsComboBox.setStyleSheet(" QScrollBar:vertical {\n"
+"     border: 1px solid black;\n"
+"border-radius: 5px;\n"
+"    background-color: rgb(40,40,40);\n"
+"     width: 60px;\n"
+"     margin: 67px 0 67px 0;\n"
+" }\n"
+"\n"
+"/* Sets up the color and height of handle */\n"
+"QScrollBar::handle:vertical {\n"
+"border-radius: 5px;\n"
+"background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.188, stop:0 rgba(180, 180, 180, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"min-height: 7px;\n"
+"}\n"
+"\n"
+"\n"
+"QScrollBar::add-line:vertical {\n"
+"     border: 1px solid black;\n"
+"background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.188, stop:0 rgba(180, 180, 180, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"     height:65px;\n"
+"border-radius: 5px;\n"
+"     subcontrol-position: bottom;\n"
+"     subcontrol-origin: margin;\n"
+" }\n"
+"\n"
+" QScrollBar::sub-line:vertical {\n"
+"     border: 1px solid black;\n"
+"background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.188, stop:0 rgba(180, 180, 180, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"     height: 65px;\n"
+"border-radius: 5px;\n"
+"     subcontrol-position: top;\n"
+"     subcontrol-origin: margin;\n"
+" }\n"
+"\n"
+"QScrollBar::up-arrow:vertical {\n"
+" image: url(./templates/img/arrows.png);\n"
+"    width: 40px;\n"
+"    height: 40px;\n"
+" padding: 5px;\n"
+" }\n"
+"QScrollBar::down-arrow:vertical {\n"
+" image: url(./templates/img/arrows-5.png);\n"
+"    width: 40px;\n"
+"    height: 40px;\n"
+" padding: 5px;\n"
+" }\n"
+"\n"
+"/* need this to get rid of crosshatching on scrollbar background */\n"
+"QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {\n"
+"background: none;\n"
+"}\n"
+"\n"
+"QComboBox {\n"
+"border: 1px solid black;\n"
+"    padding: 0px 18px 0px 3px;\n"
+"    min-width: 6em;\n"
+"\n"
+"}\n"
+"\n"
+"QComboBox::item {\n"
+"    color: rgb(0, 0, 0);\n"
+"}\n"
+"\n"
+"QComboBox:editable {\n"
+"    background: white;\n"
+"}\n"
+"\n"
+"QComboBox:!editable, QComboBox::drop-down:editable {\n"
+"background: white;\n"
+"}\n"
+"\n"
+"/* QComboBox gets the \"on\" state when the popup is open */\n"
+"QComboBox:!editable:on, QComboBox::drop-down:editable:on {\n"
+"background: white;\n"
+"}\n"
+"\n"
+"\n"
+"QComboBox::drop-down {\n"
+"border-left: 1px solid black;\n"
+"border-right: 1px solid black;\n"
+"    background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.188, stop:0 rgba(180, 180, 180, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"    width: 60px;\n"
+"     height: 50px;\n"
+"\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"\n"
+"image: url(./templates/img/arrows-5.png);\n"
+"width: 30px;\n"
+"height: 30px;\n"
+"\n"
+"}\n"
+"\n"
+"\n"
+"QComboBox QAbstractItemView {\n"
+"    selection-background-color: rgb(40, 40, 40);\n"
+"    background: white;\n"
+"}")
+        self.wifiSettingsComboBox.setEditable(False)
+        self.wifiSettingsComboBox.setMaxVisibleItems(8)
+        self.wifiSettingsComboBox.setIconSize(QtCore.QSize(30, 30))
+        self.wifiSettingsComboBox.setObjectName("wifiSettingsComboBox")
+        self.ssidlabel = QtWidgets.QLabel(self.wifiSettingsPage)
+        self.ssidlabel.setGeometry(QtCore.QRect(0, 0, 461, 31))
+        font = QtGui.QFont()
+        font.setFamily("Gotham Light")
+        font.setPointSize(14)
+        font.setBold(False)
+        font.setWeight(50)
+        self.ssidlabel.setFont(font)
+        self.ssidlabel.setStyleSheet("color: rgb(255, 255, 255);")
+        self.ssidlabel.setObjectName("ssidlabel")
+        self.wifiSettingsCancelButton = QtWidgets.QPushButton(self.wifiSettingsPage)
+        self.wifiSettingsCancelButton.setGeometry(QtCore.QRect(250, 230, 231, 91))
+        font = QtGui.QFont()
+        font.setFamily("Gotham")
+        font.setPointSize(13)
+        self.wifiSettingsCancelButton.setFont(font)
+        self.wifiSettingsCancelButton.setStyleSheet("QPushButton {\n"
+"     border: 1px solid rgb(87, 87, 87);\n"
+"    background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.188, stop:0 rgba(180, 180, 180, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"\n"
+"\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                      stop: 0 #dadbde, stop: 1 #f6f7fa);\n"
+"}\n"
+"\n"
+"QPushButton:flat {\n"
+"    border: none; /* no border for a flat push button */\n"
+"}\n"
+"\n"
+"QPushButton:default {\n"
+"    border-color: navy; /* make the default button prominent */\n"
+"}\n"
+"\n"
+"QPushButton:focus {\n"
+"    outline: none;\n"
+"}")
+        self.wifiSettingsCancelButton.setIconSize(QtCore.QSize(40, 40))
+        self.wifiSettingsCancelButton.setObjectName("wifiSettingsCancelButton")
+        self.wifiSettingsSSIDKeyboardButton = QtWidgets.QPushButton(self.wifiSettingsPage)
+        self.wifiSettingsSSIDKeyboardButton.setGeometry(QtCore.QRect(421, 40, 61, 51))
+        font = QtGui.QFont()
+        font.setFamily("Gotham")
+        font.setPointSize(19)
+        self.wifiSettingsSSIDKeyboardButton.setFont(font)
+        self.wifiSettingsSSIDKeyboardButton.setStyleSheet("QPushButton {\n"
+"     border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0.188, stop:0 rgba(180, 180, 180, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"\n"
+"\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                      stop: 0 #dadbde, stop: 1 #f6f7fa);\n"
+"}\n"
+"\n"
+"QPushButton:flat {\n"
+"    border: none; /* no border for a flat push button */\n"
+"}\n"
+"\n"
+"QPushButton:default {\n"
+"    border-color: navy; /* make the default button prominent */\n"
+"}\n"
+"\n"
+"QPushButton:focus {\n"
+"    outline: none;\n"
+"}")
+        self.wifiSettingsSSIDKeyboardButton.setIconSize(QtCore.QSize(40, 40))
+        self.wifiSettingsSSIDKeyboardButton.setObjectName("wifiSettingsSSIDKeyboardButton")
+        self.stackedWidget.addWidget(self.wifiSettingsPage)
         MainWindow.setCentralWidget(self.mainApplication)
 
         self.retranslateUi(MainWindow)
+        self.stackedWidget.setCurrentIndex(0)
         self.controlTabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -635,4 +934,10 @@ class Ui_MainWindow(object):
         self.timeLabel.setText(_translate("MainWindow", "Time :"))
         self.selectFilamentlabel.setText(_translate("MainWindow", "Material Preset"))
         self.selectFilamentlabel_2.setText(_translate("MainWindow", "Fracktal Works Curing Machine V1.0  www.fracktal.in"))
+        self.selectFilamentlabel_3.setText(_translate("MainWindow", "Not Connected"))
         self.controlTabWidget.setTabText(self.controlTabWidget.indexOf(self.settingsTab), _translate("MainWindow", "Settings"))
+        self.passwordlabel.setText(_translate("MainWindow", "Enter Password:"))
+        self.wifiSettingsDoneButton.setText(_translate("MainWindow", "Done"))
+        self.ssidlabel.setText(_translate("MainWindow", "Enter SSID:"))
+        self.wifiSettingsCancelButton.setText(_translate("MainWindow", "Cancel"))
+        self.wifiSettingsSSIDKeyboardButton.setText(_translate("MainWindow", "..."))
