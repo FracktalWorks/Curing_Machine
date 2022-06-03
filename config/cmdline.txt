@@ -1,0 +1,1 @@
+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty3 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait consoleblank=1 loglevel=3 quiet fbcon=map:10 fbcon=font:ProFont6x11 logo.nologo vt.global_cursor_default=0 
