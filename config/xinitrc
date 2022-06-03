@@ -7,8 +7,8 @@
 # invoke global X session script
 
 cd /home/pi/Curing_Machine
-git stash
-git pull
+sudo git stash
+sudo git pull
 cd /home/pi/Curing_Machine/Code
 sudo chmod +x curingMachine.py
 sudo python3 curingMachine.py
